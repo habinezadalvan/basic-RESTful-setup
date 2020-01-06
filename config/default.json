@@ -1,0 +1,4 @@
+{
+    "mongodbUrl": "mongodb+srv://habinezadalvan:MONGODBPASSWORD@cluster0-ofueu.mongodb.net/test?retryWrites=true&w=majority",
+    "secretKey": "This is my secret key"
+}
