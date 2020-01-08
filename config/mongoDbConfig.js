@@ -1,9 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import mongoose from 'mongoose';
-import config from 'config';
+import 'dotenv/config';
 import winston from 'winston';
 
-const connectionString = config.get('mongodbUrl');
+const connectionString = process.env.MONGODB_CONNECT;
 
 const connectToMongoDB = async () => {
   try {
