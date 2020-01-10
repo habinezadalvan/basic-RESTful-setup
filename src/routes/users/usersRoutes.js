@@ -5,6 +5,6 @@ import signupCtrl from '../../controllers/users/signup';
 
 const router = Router();
 
-router.post('/', [validation(userSchema)], signupCtrl.signup);
+router.post('/register', [validation(userSchema)], signupCtrl.signup);
 
 export default router;
