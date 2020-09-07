@@ -1,35 +1,51 @@
-import mongoose from 'mongoose';
-
-const userSchema = new mongoose.Schema({
-  firstname: {
-    type: String,
-    required: true,
-  },
-  lastname: {
-    type: String,
-    required: true,
-  },
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  avator: {
-    type: String,
-  },
-  data: {
-    type: Date,
-    default: Date.now,
-  },
-});
-
-export default mongoose.model('User', userSchema);
+module.exports = (sequelize, DataTypes) => {
+  const User = sequelize.define('User', {
+    firstname: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    lastname: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    avatar: {
+      type: DataTypes.STRING,
+    },
+    phoneNo: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    address: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+  }, {
+    indexes: [
+      {
+        fields: ['createdAt'],
+      },
+    ],
+  });
+  User.associate = (models) => {
+    User.hasMany(models.Product, {
+      foreignKey: 'ownerId',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    });
+  };
+  return User;
+};

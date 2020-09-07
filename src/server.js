@@ -3,16 +3,20 @@ import express from 'express';
 import cors from 'cors';
 import winston from 'winston';
 import config from 'config';
+import bodyParser from 'body-parser';
 import router from './routes';
-import connectToMongoDB from '../config/mongoDbConfig';
+import { logger } from './logging/config';
+import './config/cloudinary';
 
+
+logger();
 
 const app = express();
 
-connectToMongoDB();
-
 app.use(express.json({ extended: false }));
 app.use(cors());
+app.use(bodyParser.json());
+
 
 const version = config.get('version');
 

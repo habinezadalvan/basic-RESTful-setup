@@ -1,7 +1,8 @@
-import gravatar from 'gravatar';
-import User from '../../models/User';
+/* eslint-disable import/no-named-as-default-member */
+import models from '../../models';
 import hashPassword from '../../helpers/hash';
 import createToken from '../../helpers/createToken';
+import cloudinaryHelper from '../../helpers/do';
 
 
 class UserSignup {
@@ -10,24 +11,39 @@ class UserSignup {
       const {
         firstname, lastname, email, username, password,
       } = req.body;
-      const findUserByUsername = await User.findOne({ username: username.toLowerCase() });
-      const findUserByEmail = await User.findOne({ email: email.toLowerCase() });
+      const findUserByUsername = await models.User.findOne({
+        where: { username: username.toLowerCase() },
+        raw: true,
+      });
+      const findUserByEmail = await models.User.findOne({
+        where: { email: email.toLowerCase() },
+        raw: true,
+      });
 
       if (findUserByUsername || findUserByEmail) {
-        return res.status(400).json({ errors: [{ msg: `The user with the ${findUserByUsername ? `username: ${username}` : `email: ${email}`} is already in use` }] });
+        return res.status(400).json({
+          errors: [
+            {
+              msg: `The user with the ${
+                findUserByUsername ? `username: ${username}` : `email: ${email}`
+              } is already in use`,
+            },
+          ],
+        });
       }
-      const avator = gravatar.url(email, { s: '200', r: 'pg', d: 'mm' });
 
+      const images = await cloudinaryHelper.generateCloudinaryUrl(req.files);
       const hash = await hashPassword(password);
-      const user = new User({
+
+      const user = await models.User.create({
         firstname,
         lastname,
         username: username.toLowerCase(),
         email: email.toLowerCase(),
         password: hash,
-        avator,
+        avatar: images[0],
       });
-      await user.save();
+
       const payload = {
         user: {
           id: user.id,
@@ -42,11 +58,12 @@ class UserSignup {
           lastname,
           username,
           email,
-          avator,
+          avatar: user.avatar,
         },
         token: createdtoken,
       });
     } catch (err) {
+      console.log('err ====', err.message);
       return res.status(500).json({ errors: [{ msg: 'server error' }] });
     }
   }

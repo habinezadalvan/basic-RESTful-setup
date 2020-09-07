@@ -5,7 +5,8 @@ import 'dotenv/config';
 
 
 const auth = (req, res, next) => {
-  const token = req.header('x-access-token' || 'Authorization');
+  const token = req.headers.authorization;
+
   if (!token) {
     return res.status(401).json({
       status: 401,
@@ -13,7 +14,7 @@ const auth = (req, res, next) => {
     });
   }
   try {
-    const decoded = jwt.verify(token, process.env.secretKey);
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
     req.user = decoded.user;
     next();
   } catch (err) {

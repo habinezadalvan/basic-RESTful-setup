@@ -1,26 +1,34 @@
 import bcrypt from 'bcryptjs';
-import User from '../../models/User';
+import models from '../../models';
 import createToken from '../../helpers/createToken';
 
 class userLogin {
   static async login(req, res) {
     const { username, email, password } = req.body;
-    if (!(username || email)) return res.status(400).json({ status: 400, message: 'Email or username is required' });
+    if (!(username || email)) {
+      return res
+        .status(400)
+        .json({ status: 400, message: 'Email or username is required' });
+    }
     try {
       let user;
       if (username) {
-        user = await User.findOne({ username });
+        user = await models.User.findOne({ where: { username } });
       }
       if (email) {
-        user = await User.findOne({ email });
+        user = await models.User.findOne({ where: { email } });
       }
       if (!user) {
-        return res.status(400).json({ status: 400, message: 'invalid credentials' });
+        return res
+          .status(400)
+          .json({ status: 400, message: 'invalid credentials' });
       }
       const hashedPassword = user && user.password;
       const isMatch = await bcrypt.compareSync(password, hashedPassword);
       if (!isMatch) {
-        return res.status(400).json({ status: 400, message: 'invalid credentials' });
+        return res
+          .status(400)
+          .json({ status: 400, message: 'invalid credentials' });
       }
       const payload = {
         user: {
